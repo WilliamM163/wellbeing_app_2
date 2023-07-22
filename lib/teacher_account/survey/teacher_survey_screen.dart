@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:wellbeing_app_2/screens/error_screen.dart';
 import 'package:wellbeing_app_2/style/app_style.dart';
 import 'package:wellbeing_app_2/style/reused_widgets/app_bar.dart';
+import 'package:wellbeing_app_2/style/reused_widgets/container.dart';
 import 'package:wellbeing_app_2/teacher_account/survey/create_survey_screen.dart';
 import 'package:wellbeing_app_2/userId.dart';
 
@@ -20,19 +21,68 @@ class TeacherSurveyScreen extends StatelessWidget {
           .collection('users')
           .doc(userId)
           .collection('surveys')
+          .orderBy('Date', descending: true)
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return _loading(context);
         }
         if (snapshot.connectionState == ConnectionState.active) {
-          if (snapshot.data!.docs.isEmpty) {
+          List surveys = snapshot.data!.docs;
+          if (surveys.isEmpty) {
             return _noSurveys(context);
           }
+          return surveyList(context, surveys);
         }
         return const ErrorScreen();
       },
     );
+  }
+
+  Scaffold surveyList(BuildContext context, List<dynamic> surveys) {
+    return Scaffold(
+      appBar: customAppBar(context, 'Surveys'),
+      backgroundColor: AppStyle.backgroundColour,
+      body: Padding(
+        padding: AppStyle.appPadding,
+        child: ListView.builder(
+          itemCount: surveys.length,
+          itemBuilder: (context, index) {
+            return Column(
+              children: [
+                CustomContainer(ListTile(
+                  leading: const CircleAvatar(
+                    child: Icon(Icons.assignment_rounded),
+                  ),
+                  title: Text(
+                    surveys[index]['Title'],
+                    style: AppStyle.tileTitle,
+                  ),
+                  trailing: InkWell(
+                    onTap: () {
+                      _deleteSurvey(surveys[index].id);
+                    },
+                    child: const Icon(Icons.delete_rounded),
+                  ),
+                )),
+                const SizedBox(height: 10),
+              ],
+            );
+          },
+        ),
+      ),
+      floatingActionButton: fab(context),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
+  }
+
+  void _deleteSurvey(String surveyID) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('surveys')
+        .doc(surveyID)
+        .delete();
   }
 
   Widget _loading(BuildContext context) {
@@ -54,22 +104,25 @@ class TeacherSurveyScreen extends StatelessWidget {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton.extended(
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.grey.shade900,
-        onPressed: () async {
-          await _createSurveyTitle(context);
-          if (title != null) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => CreateSurveyScreen(title!)),
-            );
-          }
-        },
-        icon: const Icon(Icons.add),
-        label: Text('Create Survey', style: AppStyle.defaultText),
-      ),
+      floatingActionButton: fab(context),
+    );
+  }
+
+  FloatingActionButton fab(BuildContext context) {
+    return FloatingActionButton.extended(
+      foregroundColor: Colors.white,
+      backgroundColor: Colors.grey.shade900,
+      onPressed: () async {
+        await _createSurveyTitle(context);
+        if (title != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CreateSurveyScreen(title!)),
+          );
+        }
+      },
+      icon: const Icon(Icons.add),
+      label: Text('Create Survey', style: AppStyle.defaultText),
     );
   }
 
