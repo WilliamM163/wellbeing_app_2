@@ -44,6 +44,17 @@ class _CreateSurveyScreenState extends State<CreateSurveyScreen> {
           },
         ),
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {},
+        label: Text(
+          'Add a question',
+          style: AppStyle.defaultText,
+        ),
+        icon: const Icon(Icons.add),
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.grey.shade900,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
@@ -72,35 +83,37 @@ class _CreateSurveyScreenState extends State<CreateSurveyScreen> {
 
   Future<void> _exitSurvey() {
     return showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text(
-              'Are you sure you want to exit?',
-              style: AppStyle.defaultText,
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          surfaceTintColor: AppStyle.containerColour,
+          title: Text(
+            'Are you sure you want to exit?',
+            style: AppStyle.defaultText,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text(
+                'No',
+                style: AppStyle.defaultText,
+              ),
             ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text(
-                  'No',
-                  style: AppStyle.defaultText,
-                ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              child: Text(
+                'Yes',
+                style: AppStyle.defaultText,
               ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                },
-                child: Text(
-                  'Yes',
-                  style: AppStyle.defaultText,
-                ),
-              ),
-            ],
-          );
-        });
+            ),
+          ],
+        );
+      },
+    );
   }
 }

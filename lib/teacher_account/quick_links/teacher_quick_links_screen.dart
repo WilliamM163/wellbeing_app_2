@@ -1,6 +1,7 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:emoji_selector/emoji_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:wellbeing_app_2/screens/error_screen.dart';
 import 'package:wellbeing_app_2/style/app_style.dart';
@@ -11,12 +12,15 @@ import 'package:wellbeing_app_2/userId.dart';
 class TeacherQuickLinksScreen extends StatelessWidget {
   TeacherQuickLinksScreen({super.key});
   bool isSending = false;
+  EmojiData? emojiData;
 
   @override
   Widget build(BuildContext context) {
     final AppBar appBar = customAppBar(context, 'Quick Links');
     final FloatingActionButton floatingActionButton =
         FloatingActionButton.extended(
+      foregroundColor: Colors.white,
+      backgroundColor: Colors.grey.shade900,
       onPressed: () {
         addLink(context);
       },
@@ -73,18 +77,14 @@ class TeacherQuickLinksScreen extends StatelessWidget {
               backgroundColor: AppStyle.backgroundColour,
               body: Padding(
                   padding: AppStyle.appPadding,
-                  child: ListView.builder(
+                  child: GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                      ),
                       itemCount: links.length,
                       itemBuilder: (context, index) {
-                        return Column(
-                          children: [
-                            LinkTile(
-                              links: links,
-                              index: index,
-                            ),
-                            const SizedBox(height: 10),
-                          ],
-                        );
+                        return LinkTile(links: links, index: index);
                       })),
               floatingActionButton: floatingActionButton,
               floatingActionButtonLocation: fabLocation,
@@ -102,6 +102,7 @@ class TeacherQuickLinksScreen extends StatelessWidget {
 
   Future<void> addLink(BuildContext context) {
     String? title;
+    String? description;
     String? link;
 
     return showDialog(
@@ -110,48 +111,91 @@ class TeacherQuickLinksScreen extends StatelessWidget {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: const Text('Add Link'),
+              surfaceTintColor: AppStyle.containerColour,
+              title: Text(
+                'Add Link',
+                style: AppStyle.defaultText,
+              ),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextField(
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      label: Text('Link'),
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      label: Text(
+                        'Title',
+                        style: AppStyle.defaultText,
+                      ),
+                    ),
+                    onChanged: (value) {
+                      title = value;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      label: Text(
+                        'Description',
+                        style: AppStyle.defaultText,
+                      ),
+                    ),
+                    onChanged: (value) {
+                      description = value;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      label: Text(
+                        'Link',
+                        style: AppStyle.defaultText,
+                      ),
                     ),
                     onChanged: (value) {
                       link = value;
                     },
                   ),
                   const SizedBox(height: 10),
-                  TextField(
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      label: Text('Title'),
-                    ),
-                    onChanged: (value) {
-                      title = value;
-                    },
-                  ),
+                  TextButton.icon(
+                      onPressed: () async {
+                        await emojiPicker(context);
+                      },
+                      icon: const Icon(Icons.library_add_rounded),
+                      label: Text('Add Icon', style: AppStyle.defaultText)),
                 ],
               ),
               actions: [
                 Row(
                   children: [
                     if (isSending) const CircularProgressIndicator(),
-                    if (isSending) const SizedBox(width: 10),
                     TextButton.icon(
                       onPressed: isSending == false
                           ? () async {
                               setState(() {
                                 isSending = !isSending;
                               });
-                              if (link != null) {
-                                await submitLink(context, link!, title);
+                              bool isValid = confirmDetails(
+                                title: title,
+                                description: description,
+                                link: link,
+                                emojiData: emojiData,
+                              );
+                              if (isValid) {
+                                await submitLink(
+                                  context: context,
+                                  link: link!,
+                                  title: title!,
+                                  description: description!,
+                                  emojiData: emojiData!,
+                                );
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('Please add a link'),
+                                    content: Text(
+                                      'Please make sure all fields have been entered',
+                                    ),
                                   ),
                                 );
                               }
@@ -161,7 +205,10 @@ class TeacherQuickLinksScreen extends StatelessWidget {
                             }
                           : null,
                       icon: const Icon(Icons.check),
-                      label: const Text('Sumbit'),
+                      label: Text(
+                        'Sumbit',
+                        style: AppStyle.defaultText,
+                      ),
                     ),
                   ],
                 )
@@ -173,15 +220,96 @@ class TeacherQuickLinksScreen extends StatelessWidget {
     );
   }
 
-  submitLink(BuildContext context, String link, String? title) async {
+  emojiPicker(BuildContext context) {
+    return showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(builder: (context, setState) {
+          if (emojiData == null) {
+            return EmojiSelector(
+              padding: const EdgeInsets.all(20),
+              onSelected: (emoji) {
+                setState(() => emojiData = emoji);
+              },
+            );
+          } else {
+            return SizedBox(
+              width: double.infinity,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(emojiData!.char, style: const TextStyle(fontSize: 60)),
+                  const SizedBox(height: 10),
+                  TextButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        emojiData = null;
+                      });
+                    },
+                    icon: const Icon(Icons.edit_rounded),
+                    label: Text(
+                      'Change Icon',
+                      style: AppStyle.defaultText,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  TextButton.icon(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: const Icon(Icons.done_rounded),
+                    label: Text(
+                      'Done',
+                      style: AppStyle.defaultText,
+                    ),
+                  )
+                ],
+              ),
+            );
+          }
+        });
+      },
+    );
+  }
+
+  bool confirmDetails({
+    required String? title,
+    required String? description,
+    required String? link,
+    required EmojiData? emojiData,
+  }) {
+    if (title == null) {
+      return false;
+    }
+    if (description == null) {
+      return false;
+    }
+    if (link == null) {
+      return false;
+    }
+    if (emojiData == null) {
+      return false;
+    }
+    return true;
+  }
+
+  submitLink({
+    required BuildContext context,
+    required String link,
+    required String title,
+    required String description,
+    required EmojiData emojiData,
+  }) async {
     final Timestamp date = Timestamp.now();
     var linkCollection = FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
-        .collection('links');
+        .collection('quick links');
     linkCollection.add({
-      'Link': link,
       'Title': title,
+      'Description': description,
+      'Link': link,
+      'Emoji': emojiData.char,
       'Date': date,
     });
 
@@ -227,7 +355,39 @@ class LinkTile extends StatelessWidget {
         child: Container(
           width: double.infinity,
           padding: const EdgeInsets.all(10),
-          child: Text(links[index]),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                links[index]['Emoji'],
+                style: const TextStyle(fontSize: 40),
+              ),
+              Text(
+                links[index]['Title'],
+                style: AppStyle.tileTitle,
+              ),
+              Text(
+                links[index]['Description'],
+                style: AppStyle.tileDescription,
+                maxLines: 3,
+              ),
+              Expanded(child: Container()),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: Text(
+                      links[index]['Link'],
+                      style: AppStyle.tileLink,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  const Icon(Icons.keyboard_double_arrow_right_rounded),
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -237,7 +397,7 @@ class LinkTile extends StatelessWidget {
     FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
-        .collection('links')
+        .collection('quick links')
         .doc(linkId)
         .delete();
   }

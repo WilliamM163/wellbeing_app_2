@@ -55,6 +55,8 @@ class TeacherSurveyScreen extends StatelessWidget {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.grey.shade900,
         onPressed: () async {
           await _createSurveyTitle(context);
           if (title != null) {
@@ -76,6 +78,7 @@ class TeacherSurveyScreen extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
+          surfaceTintColor: AppStyle.containerColour,
           title: Text(
             'Create Survey',
             style: AppStyle.defaultText.copyWith(fontWeight: FontWeight.bold),

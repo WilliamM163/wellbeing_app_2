@@ -41,13 +41,12 @@ class ActionTile extends StatelessWidget {
                     ),
                     Text(
                       title,
-                      style: AppStyle.defaultText.copyWith(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
+                      style: AppStyle.tileTitle,
                     ),
-                    Text(description,
-                        style: AppStyle.defaultText.copyWith(fontSize: 10)),
+                    Text(
+                      description,
+                      style: AppStyle.tileDescription,
+                    ),
                   ],
                 ),
               ),

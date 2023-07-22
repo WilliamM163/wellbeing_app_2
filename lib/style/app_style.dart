@@ -21,6 +21,15 @@ class AppStyle {
     fontWeight: FontWeight.bold,
   );
 
+  static TextStyle tileTitle = defaultText.copyWith(
+    fontWeight: FontWeight.bold,
+    fontSize: 18,
+  );
+
+  static TextStyle tileDescription = defaultText.copyWith(fontSize: 10);
+
+  static TextStyle tileLink = defaultText.copyWith(fontSize: 12);
+
   static Color primaryColour = Colors.purple.shade800;
 
   static Color secondaryColour = Colors.grey;

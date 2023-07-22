@@ -8,16 +8,10 @@ import 'package:wellbeing_app_2/style/reused_widgets/app_bar.dart';
 import 'package:wellbeing_app_2/style/reused_widgets/container.dart';
 import 'package:wellbeing_app_2/userId.dart';
 
-class TeacherAccountInfoScreen extends StatefulWidget {
+class TeacherAccountInfoScreen extends StatelessWidget {
   const TeacherAccountInfoScreen(this.userData, {super.key});
   final Map<String, dynamic> userData;
 
-  @override
-  State<TeacherAccountInfoScreen> createState() =>
-      _TeacherAccountInfoScreenState();
-}
-
-class _TeacherAccountInfoScreenState extends State<TeacherAccountInfoScreen> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -51,13 +45,13 @@ class _TeacherAccountInfoScreenState extends State<TeacherAccountInfoScreen> {
                           children: [
                             Row(
                               children: [
-                                if (widget.userData['Avatar'] != null)
+                                if (userData['Avatar'] != null)
                                   CircleAvatar(
                                     radius: 40,
                                     backgroundImage:
-                                        NetworkImage(widget.userData['Avatar']),
+                                        NetworkImage(userData['Avatar']),
                                   ),
-                                if (widget.userData['Avatar'] == null)
+                                if (userData['Avatar'] == null)
                                   const Icon(
                                     Icons.account_circle_rounded,
                                     size: 80,
@@ -67,19 +61,19 @@ class _TeacherAccountInfoScreenState extends State<TeacherAccountInfoScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      widget.userData['Name'],
+                                      userData['Name'],
                                       style: AppStyle.defaultText.copyWith(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 20,
                                       ),
                                     ),
                                     Text(
-                                      widget.userData['Email'],
+                                      userData['Email'],
                                       style: AppStyle.defaultText,
                                       overflow: TextOverflow.clip,
                                     ),
                                     Text(
-                                      'School: ${widget.userData['School']}',
+                                      'School: ${userData['School']}',
                                       style: AppStyle.defaultText,
                                     ),
                                   ],
@@ -105,6 +99,8 @@ class _TeacherAccountInfoScreenState extends State<TeacherAccountInfoScreen> {
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
                         ),
                         itemCount: students.length,
                         itemBuilder: (context, index) {
@@ -112,6 +108,8 @@ class _TeacherAccountInfoScreenState extends State<TeacherAccountInfoScreen> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
                                 children: [
                                   if (students[index]['Avatar'] != null)
                                     CircleAvatar(
@@ -125,34 +123,29 @@ class _TeacherAccountInfoScreenState extends State<TeacherAccountInfoScreen> {
                                       Icons.account_circle_rounded,
                                       size: 80,
                                     ),
-                                  Expanded(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        FittedBox(
-                                          fit: BoxFit.fitWidth,
-                                          child: Text(
-                                            students[index]['Name'],
-                                            style:
-                                                AppStyle.defaultText.copyWith(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 20,
-                                            ),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      FittedBox(
+                                        fit: BoxFit.fitWidth,
+                                        child: Text(
+                                          students[index]['Name'],
+                                          style: AppStyle.defaultText.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20,
                                           ),
                                         ),
-                                        FittedBox(
-                                          fit: BoxFit.fitWidth,
-                                          child: Text(
-                                            students[index]['Email'],
-                                            style:
-                                                AppStyle.defaultText.copyWith(
-                                              fontSize: 12,
-                                            ),
+                                      ),
+                                      FittedBox(
+                                        fit: BoxFit.fitWidth,
+                                        child: Text(
+                                          students[index]['Email'],
+                                          style: AppStyle.defaultText.copyWith(
+                                            fontSize: 12,
                                           ),
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   )
                                 ],
                               ),

@@ -17,6 +17,8 @@ class TeacherQuotesScreen extends StatelessWidget {
     final AppBar appBar = customAppBar(context, 'Quotes');
     final FloatingActionButton floatingActionButton =
         FloatingActionButton.extended(
+      foregroundColor: Colors.white,
+      backgroundColor: Colors.grey.shade900,
       onPressed: () {
         addQuote(context);
       },
@@ -110,14 +112,21 @@ class TeacherQuotesScreen extends StatelessWidget {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: const Text('Add Quote'),
+              surfaceTintColor: AppStyle.containerColour,
+              title: Text(
+                'Add Quote',
+                style: AppStyle.defaultText,
+              ),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextField(
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      label: Text('Quote'),
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      label: Text(
+                        'Quote',
+                        style: AppStyle.defaultText,
+                      ),
                     ),
                     onChanged: (value) {
                       quote = value;
@@ -125,9 +134,12 @@ class TeacherQuotesScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   TextField(
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      label: Text('Author'),
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      label: Text(
+                        'Author',
+                        style: AppStyle.defaultText,
+                      ),
                     ),
                     onChanged: (value) {
                       author = value;
@@ -161,7 +173,10 @@ class TeacherQuotesScreen extends StatelessWidget {
                             }
                           : null,
                       icon: const Icon(Icons.check),
-                      label: const Text('Sumbit'),
+                      label: Text(
+                        'Sumbit',
+                        style: AppStyle.defaultText,
+                      ),
                     ),
                   ],
                 )

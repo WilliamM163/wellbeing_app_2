@@ -25,84 +25,98 @@ class _QuestionState extends State<Question> {
 
     return Column(
       children: [
-        Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            color: Colors.white,
+        QuestionTile(sliderRGBValue),
+        const SizedBox(height: 10),
+      ],
+    );
+  }
+
+  // ignore: non_constant_identifier_names
+  Container QuestionTile(Color sliderRGBValue) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15),
+        color: Colors.white,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const CircleAvatar(
+                backgroundColor: Colors.black,
+                radius: 10,
+                child: Icon(
+                  Icons.question_mark_rounded,
+                  color: Colors.white,
+                  size: 15,
+                ),
+              ),
+              const SizedBox(width: 5),
+              Text(
+                'Question ${widget.index + 1}',
+                style: AppStyle.defaultText.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+            ],
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Text(
+            widget.question,
+            style: AppStyle.defaultText,
+          ),
+          Slider(
+            value: _sliderValue,
+            activeColor: sliderRGBValue,
+            min: 0,
+            max: 10,
+            divisions: 10,
+            label: _sliderValue.toInt().toString(),
+            onChanged: (value) => setState(() => _sliderValue = value),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
                 children: [
-                  const Icon(Icons.question_mark_rounded),
+                  const Icon(Icons.thumb_down_rounded, size: 15),
+                  const SizedBox(width: 5),
                   Text(
-                    'Question ${widget.index + 1}',
-                    style: AppStyle.defaultText.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
+                    'Poor',
+                    style: AppStyle.defaultText.copyWith(fontSize: 12),
                   ),
                 ],
               ),
               Text(
-                widget.question,
-                style: AppStyle.defaultText,
-              ),
-              Slider(
-                value: _sliderValue,
-                activeColor: sliderRGBValue,
-                min: 0,
-                max: 10,
-                divisions: 10,
-                label: _sliderValue.toInt().toString(),
-                onChanged: (value) => setState(() => _sliderValue = value),
+                '<- Drag ->',
+                style: AppStyle.defaultText.copyWith(fontSize: 12),
               ),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.thumb_down_rounded, size: 15),
-                      const SizedBox(width: 5),
-                      Text(
-                        'Poor',
-                        style: AppStyle.defaultText.copyWith(fontSize: 12),
-                      ),
-                    ],
-                  ),
+                  const Icon(Icons.thumb_up_rounded, size: 15),
+                  const SizedBox(width: 5),
                   Text(
-                    '<- Drag ->',
+                    'Great',
                     style: AppStyle.defaultText.copyWith(fontSize: 12),
-                  ),
-                  Row(
-                    children: [
-                      const Icon(Icons.thumb_up_rounded, size: 15),
-                      const SizedBox(width: 5),
-                      Text(
-                        'Great',
-                        style: AppStyle.defaultText.copyWith(fontSize: 12),
-                      ),
-                    ],
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
-              if (widget.furtherQuestion != null)
-                TextField(
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    label: Text(widget.furtherQuestion!),
-                  ),
-                ),
             ],
           ),
-        ),
-        const SizedBox(height: 10),
-      ],
+          const SizedBox(height: 10),
+          if (widget.furtherQuestion != null)
+            TextField(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                label: Text(widget.furtherQuestion!),
+              ),
+            ),
+        ],
+      ),
     );
   }
 

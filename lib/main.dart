@@ -38,6 +38,7 @@ class WellbeingApp extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.active) {
             if (snapshot.hasData) {
               // Check whether the Account Type is Student or Teacher
+
               return FutureBuilder(
                 future: FirebaseFirestore.instance
                     .collection('users')

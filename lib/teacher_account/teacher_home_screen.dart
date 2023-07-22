@@ -10,51 +10,51 @@ import 'package:wellbeing_app_2/teacher_account/resources/teacher_resources_scre
 import 'package:wellbeing_app_2/teacher_account/widgets/action_tiles.dart';
 
 class TeacherHomeScreen extends StatelessWidget {
-  TeacherHomeScreen(this.userData, {super.key});
+  const TeacherHomeScreen(this.userData, {super.key});
   final Map<String, dynamic> userData;
-
-  final List<Map> actionsList = [
-    {
-      'Icon': Icons.assignment_add,
-      'Title': 'Create Survey',
-      'Description':
-          'Send survey\'s to your students. Students can fill out responses. You will be able to read their feedback.',
-      'Colour': Colors.purple.shade800,
-      'Screen': TeacherSurveyScreen(),
-    },
-    {
-      'Icon': Icons.link_rounded,
-      'Title': 'Quick Links',
-      'Description':
-          'Add links. Student\'s will be able to access these links, if and when needed.',
-      'Colour': Colors.blue.shade800,
-      'Screen': TeacherQuickLinksScreen(),
-    },
-    {
-      'Icon': Icons.library_books,
-      'Title': 'Resources',
-      'Description': 'Add useful resources, and lessons for students to read.',
-      'Colour': Colors.green.shade800,
-      'Screen': const TeacherResourcesScreen(),
-    },
-    {
-      'Icon': Icons.format_quote_rounded,
-      'Title': 'Quotes',
-      'Description': 'Add quotes. A student will see a new quote everyday.',
-      'Colour': Colors.red.shade800,
-      'Screen': TeacherQuotesScreen(),
-    },
-    {
-      'Icon': Icons.school_rounded,
-      'Title': 'Manage Students',
-      'Description': 'Check student\'s survey activity.',
-      'Colour': Colors.orange.shade800,
-      'Screen': const ManageStudentsScreen(),
-    },
-  ];
 
   @override
   Widget build(BuildContext context) {
+    final List<Map> actionsList = [
+      {
+        'Icon': Icons.assignment_add,
+        'Title': 'Create Survey',
+        'Description':
+            'Send survey\'s to your students. Students can fill out responses. You will be able to read their feedback.',
+        'Colour': Colors.purple.shade800,
+        'Screen': TeacherSurveyScreen(),
+      },
+      {
+        'Icon': Icons.link_rounded,
+        'Title': 'Quick Links',
+        'Description':
+            'Add links. Student\'s will be able to access these links, if and when needed.',
+        'Colour': Colors.blue.shade800,
+        'Screen': TeacherQuickLinksScreen(),
+      },
+      {
+        'Icon': Icons.library_books,
+        'Title': 'Resources',
+        'Description':
+            'Add useful resources, and lessons for students to read.',
+        'Colour': Colors.green.shade800,
+        'Screen': const TeacherResourcesScreen(),
+      },
+      {
+        'Icon': Icons.format_quote_rounded,
+        'Title': 'Quotes',
+        'Description': 'Add quotes. A student will see a new quote everyday.',
+        'Colour': Colors.red.shade800,
+        'Screen': TeacherQuotesScreen(),
+      },
+      {
+        'Icon': Icons.school_rounded,
+        'Title': 'Manage Students',
+        'Description': 'Check student\'s survey activity.',
+        'Colour': Colors.orange.shade800,
+        'Screen': ManageStudentsScreen(userData),
+      },
+    ];
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -83,7 +83,7 @@ class TeacherHomeScreen extends StatelessWidget {
         backgroundColor: AppStyle.appBarColour,
       ),
       backgroundColor: AppStyle.backgroundColour,
-      drawer: const TeacherDrawer(),
+      drawer: TeacherDrawer(userData),
       body: Padding(
         padding: AppStyle.appPadding,
         child: GridView.builder(
