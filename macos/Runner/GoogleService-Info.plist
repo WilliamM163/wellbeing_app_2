@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>3270003709-m5m1pepn3qpr6b9fghg9cngsa31bqre4.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.3270003709-m5m1pepn3qpr6b9fghg9cngsa31bqre4</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCdwXVYR2uvKC8NFIA_lm87nDQzMT-PejY</string>
+	<key>GCM_SENDER_ID</key>
+	<string>3270003709</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.wellbeingApp2.RunnerTests</string>
+	<key>PROJECT_ID</key>
+	<string>wellbeing-app-2</string>
+	<key>STORAGE_BUCKET</key>
+	<string>wellbeing-app-2.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:3270003709:ios:0322aaebc68d274c216794</string>
+</dict>
+</plist>
