@@ -26,7 +26,7 @@ class WellbeingApp extends StatelessWidget {
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     return MaterialApp(
-      title: 'Wellbeing App',
+      title: 'Taupānga Oranga',
       theme: ThemeData(useMaterial3: true),
       debugShowCheckedModeBanner: false,
       home: StreamBuilder(
