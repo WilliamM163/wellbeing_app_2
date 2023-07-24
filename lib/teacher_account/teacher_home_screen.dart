@@ -22,7 +22,7 @@ class TeacherHomeScreen extends StatelessWidget {
         'Description':
             'Send survey\'s to your students. Students can fill out responses. You will be able to read their feedback.',
         'Colour': Colors.purple.shade800,
-        'Screen': TeacherSurveyScreen(),
+        'Screen': TeacherSurveyScreen(userData),
       },
       {
         'Icon': Icons.link_rounded,

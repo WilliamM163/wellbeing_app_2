@@ -7,8 +7,9 @@ import 'package:wellbeing_app_2/teacher_account/survey/question.dart';
 import 'package:wellbeing_app_2/userId.dart';
 
 class CreateSurveyScreen extends StatefulWidget {
-  const CreateSurveyScreen(this.title, {super.key});
+  const CreateSurveyScreen(this.title, {super.key, required this.userData});
   final String title;
+  final Map<String, dynamic> userData;
 
   @override
   State<CreateSurveyScreen> createState() => _CreateSurveyScreenState();
@@ -286,6 +287,15 @@ class _CreateSurveyScreenState extends State<CreateSurveyScreen> {
                             'Date': Timestamp.now(),
                             'Title': widget.title,
                             'Survey': questions,
+                          });
+                          await FirebaseFirestore.instance
+                              .collection('notifications')
+                              .doc()
+                              .set({
+                            'Title':
+                                '${widget.userData['Name']} has sent you a survey to do',
+                            'Body': widget.title,
+                            'Topic ID': userId,
                           });
                           Navigator.pop(context);
                           Navigator.pop(context);

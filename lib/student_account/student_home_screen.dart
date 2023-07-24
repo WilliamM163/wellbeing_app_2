@@ -5,6 +5,7 @@ import 'package:wellbeing_app_2/student_account/drawer/student_drawer.dart';
 import 'package:wellbeing_app_2/student_account/home/student_home_page.dart';
 import 'package:wellbeing_app_2/student_account/journal/student_journal_page.dart';
 import 'package:wellbeing_app_2/student_account/quick_links/student_quick_links_page.dart';
+import 'package:wellbeing_app_2/push_notifications/push_notifications.dart';
 import 'package:wellbeing_app_2/style/app_style.dart';
 
 class StudentHomeScreen extends StatefulWidget {
@@ -62,6 +63,12 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
           builder: (context) => StudentAccountInfoScreen(widget.userData),
         ),
       );
+
+  @override
+  void initState() {
+    setupPushNotifications(widget.userData['Teacher Id']);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

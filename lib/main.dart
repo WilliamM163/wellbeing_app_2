@@ -52,6 +52,8 @@ class WellbeingApp extends StatelessWidget {
                     Map<String, dynamic> userData =
                         snapshot.data!.data() as Map<String, dynamic>;
                     if (userData['Account Type'] == 'Student') {
+                      // final String teacherId = userData['Teacher Id'];
+
                       return StudentHomeScreen(userData: userData);
                     }
                     if (userData['Account Type'] == 'Teacher') {

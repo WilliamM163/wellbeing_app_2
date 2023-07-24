@@ -11,8 +11,9 @@ import 'package:wellbeing_app_2/userId.dart';
 
 // ignore: must_be_immutable
 class TeacherSurveyScreen extends StatelessWidget {
-  TeacherSurveyScreen({super.key});
+  TeacherSurveyScreen(this.userData, {super.key});
   String? title;
+  Map<String, dynamic> userData;
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +118,10 @@ class TeacherSurveyScreen extends StatelessWidget {
         if (title != null) {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => CreateSurveyScreen(title!)),
+            MaterialPageRoute(
+              builder: (context) =>
+                  CreateSurveyScreen(title!, userData: userData),
+            ),
           );
         }
       },
