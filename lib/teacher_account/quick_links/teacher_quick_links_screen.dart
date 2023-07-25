@@ -1,18 +1,16 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:emoji_selector/emoji_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:wellbeing_app_2/screens/error_screen.dart';
 import 'package:wellbeing_app_2/style/app_style.dart';
 import 'package:wellbeing_app_2/style/reused_widgets/app_bar.dart';
-import 'package:wellbeing_app_2/style/reused_widgets/container.dart';
+import 'package:wellbeing_app_2/style/reused_widgets/link_tile.dart';
 import 'package:wellbeing_app_2/userId.dart';
 
 class TeacherQuickLinksScreen extends StatelessWidget {
   TeacherQuickLinksScreen({super.key});
   bool isSending = false;
-  EmojiData? emojiData;
 
   @override
   Widget build(BuildContext context) {
@@ -81,10 +79,34 @@ class TeacherQuickLinksScreen extends StatelessWidget {
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
                       ),
                       itemCount: links.length,
                       itemBuilder: (context, index) {
-                        return LinkTile(links: links, index: index);
+                        return LinkTile(
+                          links: links,
+                          index: index,
+                          onTap: () {
+                            showModalBottomSheet(
+                              backgroundColor: AppStyle.backgroundColour,
+                              context: context,
+                              builder: (context) => Center(
+                                child: TextButton.icon(
+                                  onPressed: () {
+                                    deleteLink(links[index].id);
+                                    Navigator.pop(context);
+                                  },
+                                  icon: const Icon(Icons.delete_rounded),
+                                  label: Text(
+                                    'Delete Link',
+                                    style: AppStyle.defaultText,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        );
                       })),
               floatingActionButton: floatingActionButton,
               floatingActionButtonLocation: fabLocation,
@@ -104,6 +126,7 @@ class TeacherQuickLinksScreen extends StatelessWidget {
     String? title;
     String? description;
     String? link;
+    String? emoji;
 
     return showDialog(
       context: context,
@@ -158,12 +181,18 @@ class TeacherQuickLinksScreen extends StatelessWidget {
                     },
                   ),
                   const SizedBox(height: 10),
-                  TextButton.icon(
-                      onPressed: () async {
-                        await emojiPicker(context);
-                      },
-                      icon: const Icon(Icons.library_add_rounded),
-                      label: Text('Add Icon', style: AppStyle.defaultText)),
+                  TextField(
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      label: Text(
+                        'Emoji',
+                        style: AppStyle.defaultText,
+                      ),
+                    ),
+                    onChanged: (value) {
+                      emoji = value;
+                    },
+                  ),
                 ],
               ),
               actions: [
@@ -180,7 +209,7 @@ class TeacherQuickLinksScreen extends StatelessWidget {
                                 title: title,
                                 description: description,
                                 link: link,
-                                emojiData: emojiData,
+                                emoji: emoji,
                               );
                               if (isValid) {
                                 await submitLink(
@@ -188,7 +217,7 @@ class TeacherQuickLinksScreen extends StatelessWidget {
                                   link: link!,
                                   title: title!,
                                   description: description!,
-                                  emojiData: emojiData!,
+                                  emoji: emoji!,
                                 );
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -220,63 +249,20 @@ class TeacherQuickLinksScreen extends StatelessWidget {
     );
   }
 
-  emojiPicker(BuildContext context) {
-    return showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(builder: (context, setState) {
-          if (emojiData == null) {
-            return EmojiSelector(
-              padding: const EdgeInsets.all(20),
-              onSelected: (emoji) {
-                setState(() => emojiData = emoji);
-              },
-            );
-          } else {
-            return SizedBox(
-              width: double.infinity,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(emojiData!.char, style: const TextStyle(fontSize: 60)),
-                  const SizedBox(height: 10),
-                  TextButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        emojiData = null;
-                      });
-                    },
-                    icon: const Icon(Icons.edit_rounded),
-                    label: Text(
-                      'Change Icon',
-                      style: AppStyle.defaultText,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  TextButton.icon(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: const Icon(Icons.done_rounded),
-                    label: Text(
-                      'Done',
-                      style: AppStyle.defaultText,
-                    ),
-                  )
-                ],
-              ),
-            );
-          }
-        });
-      },
-    );
+  void deleteLink(String linkId) async {
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('quick links')
+        .doc(linkId)
+        .delete();
   }
 
   bool confirmDetails({
     required String? title,
     required String? description,
     required String? link,
-    required EmojiData? emojiData,
+    required String? emoji,
   }) {
     if (title == null) {
       return false;
@@ -287,7 +273,7 @@ class TeacherQuickLinksScreen extends StatelessWidget {
     if (link == null) {
       return false;
     }
-    if (emojiData == null) {
+    if (emoji == null) {
       return false;
     }
     return true;
@@ -298,7 +284,7 @@ class TeacherQuickLinksScreen extends StatelessWidget {
     required String link,
     required String title,
     required String description,
-    required EmojiData emojiData,
+    required String emoji,
   }) async {
     final Timestamp date = Timestamp.now();
     var linkCollection = FirebaseFirestore.instance
@@ -309,96 +295,11 @@ class TeacherQuickLinksScreen extends StatelessWidget {
       'Title': title,
       'Description': description,
       'Link': link,
-      'Emoji': emojiData.char,
+      'Emoji': emoji,
       'Date': date,
     });
 
     // ignore: use_build_context_synchronously
     Navigator.of(context).pop();
-  }
-}
-
-class LinkTile extends StatelessWidget {
-  const LinkTile({
-    super.key,
-    required this.links,
-    required this.index,
-  });
-
-  final List links;
-  final int index;
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomContainer(
-      InkWell(
-        onTap: () {
-          showModalBottomSheet(
-            backgroundColor: AppStyle.backgroundColour,
-            context: context,
-            builder: (context) => Center(
-              child: TextButton.icon(
-                onPressed: () {
-                  deleteLink(links[index].id);
-                  Navigator.pop(context);
-                },
-                icon: const Icon(Icons.delete_rounded),
-                label: Text(
-                  'Delete Link',
-                  style: AppStyle.defaultText,
-                ),
-              ),
-            ),
-          );
-        },
-        borderRadius: BorderRadius.circular(15),
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                links[index]['Emoji'],
-                style: const TextStyle(fontSize: 40),
-              ),
-              Text(
-                links[index]['Title'],
-                style: AppStyle.tileTitle,
-              ),
-              Text(
-                links[index]['Description'],
-                style: AppStyle.tileDescription,
-                maxLines: 3,
-              ),
-              Expanded(child: Container()),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Expanded(
-                    child: Text(
-                      links[index]['Link'],
-                      style: AppStyle.tileLink,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  const Icon(Icons.keyboard_double_arrow_right_rounded),
-                ],
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void deleteLink(String linkId) async {
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .collection('quick links')
-        .doc(linkId)
-        .delete();
   }
 }
