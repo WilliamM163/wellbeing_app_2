@@ -62,12 +62,12 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCdwXVYR2uvKC8NFIA_lm87nDQzMT-PejY',
-    appId: '1:3270003709:ios:4279f6ea12e3dcff216794',
+    appId: '1:3270003709:ios:718b85c49f918509216794',
     messagingSenderId: '3270003709',
     projectId: 'wellbeing-app-2',
     storageBucket: 'wellbeing-app-2.appspot.com',
-    iosClientId: '3270003709-1e2sa9nr50ljrl2n6gbish0vgcgl3ml7.apps.googleusercontent.com',
-    iosBundleId: 'com.example.wellbeingApp2',
+    iosClientId: '3270003709-dea7np7rn6fu752771j4tplbcgmuuvtq.apps.googleusercontent.com',
+    iosBundleId: 'com.testing.wellbeingApp',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
