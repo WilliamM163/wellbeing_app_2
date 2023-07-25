@@ -20,12 +20,8 @@ class StudentHomeScreen extends StatefulWidget {
 class _StudentHomeScreenState extends State<StudentHomeScreen> {
   int _selectedIndex = 0;
   final PageController _pageController = PageController(initialPage: 0);
-  final List<Widget> _pages = [
-    const StudentHomePage(),
-    const StudentQuickLinksPage(),
-    const StudentJournalPage(),
-    const StudentAgendaPage(),
-  ];
+
+  List<Widget>? _pages;
 
   final List<BottomNavigationBarItem> _bottomNavigationBar = const [
     BottomNavigationBarItem(
@@ -67,6 +63,14 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
   @override
   void initState() {
     setupPushNotifications(widget.userData['Teacher Id']);
+
+    _pages = [
+      StudentHomePage(widget.userData),
+      StudentQuickLinksPage(widget.userData),
+      const StudentJournalPage(),
+      const StudentAgendaPage(),
+    ];
+
     super.initState();
   }
 
@@ -104,7 +108,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
       body: PageView(
         controller: _pageController,
         scrollDirection: Axis.horizontal,
-        children: _pages,
+        children: _pages!,
         onPageChanged: (index) {
           setState(() {
             _selectedIndex = index;
