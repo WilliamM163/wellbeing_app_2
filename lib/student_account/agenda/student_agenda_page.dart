@@ -13,7 +13,12 @@ class _StudentAgendaPageState extends State<StudentAgendaPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppStyle.backgroundColour,
-      body: const Center(child: Text('Student Agenda Page')),
+      body: Center(
+          child: Text(
+        'Sorry the Agenda Page has yet to be implemented',
+        style: AppStyle.mainTitle,
+        textAlign: TextAlign.center,
+      )),
     );
   }
 }

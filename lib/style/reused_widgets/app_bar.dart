@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:wellbeing_app_2/style/app_style.dart';
 
-AppBar customAppBar(BuildContext context, String title) {
+AppBar customAppBar(
+  BuildContext context,
+  String title, {
+  Color? color,
+  double? height,
+  Widget? action,
+}) {
   return AppBar(
-    toolbarHeight: 80,
+    toolbarHeight: height ?? 80,
     elevation: 0,
     automaticallyImplyLeading: false,
-    backgroundColor: AppStyle.appBarColour,
+    backgroundColor: color ?? AppStyle.appBarColour,
     title: Row(
       children: [
         InkWell(
@@ -18,7 +24,8 @@ AppBar customAppBar(BuildContext context, String title) {
           ),
         ),
         const SizedBox(width: 7),
-        Text(title, style: AppStyle.mainTitle),
+        Expanded(child: Text(title, style: AppStyle.mainTitle)),
+        action ?? Container(),
       ],
     ),
   );

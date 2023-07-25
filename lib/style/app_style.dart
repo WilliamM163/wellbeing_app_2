@@ -44,4 +44,15 @@ class AppStyle {
   static Color navigationBarColour = Colors.white;
 
   static Color backgroundColour = Colors.grey[200]!;
+
+  static List<Color> cardsColor = [
+    Colors.red.shade100,
+    Colors.pink.shade100,
+    Colors.orange.shade100,
+    Colors.yellow.shade100,
+    Colors.green.shade100,
+    Colors.cyan.shade100,
+    Colors.blue.shade100,
+    Colors.blueGrey.shade100,
+  ];
 }
