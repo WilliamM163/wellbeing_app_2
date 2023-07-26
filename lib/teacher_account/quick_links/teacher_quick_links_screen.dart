@@ -1,7 +1,8 @@
-// ignore_for_file: must_be_immutable
+// ignore_for_file: must_be_immutable, use_build_context_synchronously
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:wellbeing_app_2/screens/error_screen.dart';
 import 'package:wellbeing_app_2/style/app_style.dart';
 import 'package:wellbeing_app_2/style/reused_widgets/app_bar.dart';
@@ -205,7 +206,7 @@ class TeacherQuickLinksScreen extends StatelessWidget {
                               setState(() {
                                 isSending = !isSending;
                               });
-                              bool isValid = confirmDetails(
+                              bool isValid = await confirmDetails(
                                 title: title,
                                 description: description,
                                 link: link,
@@ -258,12 +259,12 @@ class TeacherQuickLinksScreen extends StatelessWidget {
         .delete();
   }
 
-  bool confirmDetails({
+  Future<bool> confirmDetails({
     required String? title,
     required String? description,
     required String? link,
     required String? emoji,
-  }) {
+  }) async {
     if (title == null) {
       return false;
     }
@@ -271,7 +272,10 @@ class TeacherQuickLinksScreen extends StatelessWidget {
       return false;
     }
     if (link == null) {
-      return false;
+      final bool isValidURL = await canLaunchUrl(Uri.parse(link!));
+      if (!isValidURL) {
+        return false;
+      }
     }
     if (emoji == null) {
       return false;
@@ -299,7 +303,6 @@ class TeacherQuickLinksScreen extends StatelessWidget {
       'Date': date,
     });
 
-    // ignore: use_build_context_synchronously
     Navigator.of(context).pop();
   }
 }

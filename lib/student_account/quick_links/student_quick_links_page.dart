@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:wellbeing_app_2/screens/error_screen.dart';
 import 'package:wellbeing_app_2/style/app_style.dart';
 import 'package:wellbeing_app_2/style/reused_widgets/link_tile.dart';
@@ -48,7 +49,12 @@ class StudentQuickLinksPage extends StatelessWidget {
                         return LinkTile(
                           links: links,
                           index: index,
-                          onTap: () {},
+                          onTap: () {
+                            launchUrl(
+                              Uri.parse(links[index]['Link']),
+                              mode: LaunchMode.externalApplication,
+                            );
+                          },
                         );
                       }));
             }

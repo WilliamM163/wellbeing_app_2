@@ -28,7 +28,11 @@ class AppStyle {
 
   static TextStyle tileDescription = defaultText.copyWith(fontSize: 10);
 
-  static TextStyle tileLink = defaultText.copyWith(fontSize: 12);
+  static TextStyle tileLink = defaultText.copyWith(
+    fontSize: 12,
+    color: Colors.blue,
+    decoration: TextDecoration.underline,
+  );
 
   static Color primaryColour = Colors.purple.shade800;
 
