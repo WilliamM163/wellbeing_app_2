@@ -7,6 +7,7 @@ import 'package:wellbeing_app_2/style/app_style.dart';
 import 'package:wellbeing_app_2/style/reused_widgets/app_bar.dart';
 import 'package:wellbeing_app_2/style/reused_widgets/container.dart';
 import 'package:wellbeing_app_2/teacher_account/survey/create_survey_screen.dart';
+import 'package:wellbeing_app_2/teacher_account/survey/survey_activity.dart';
 import 'package:wellbeing_app_2/userId.dart';
 
 // ignore: must_be_immutable
@@ -51,21 +52,37 @@ class TeacherSurveyScreen extends StatelessWidget {
           itemBuilder: (context, index) {
             return Column(
               children: [
-                CustomContainer(ListTile(
-                  leading: const CircleAvatar(
-                    child: Icon(Icons.assignment_rounded),
+                InkWell(
+                  borderRadius: BorderRadius.circular(15),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SurveyActivityScreen(
+                          userData,
+                          surveys[index].id,
+                        ),
+                      ),
+                    );
+                  },
+                  child: CustomContainer(
+                    ListTile(
+                      leading: const CircleAvatar(
+                        child: Icon(Icons.assignment_rounded),
+                      ),
+                      title: Text(
+                        surveys[index]['Title'],
+                        style: AppStyle.tileTitle,
+                      ),
+                      trailing: InkWell(
+                        onTap: () {
+                          _deleteSurvey(surveys[index].id);
+                        },
+                        child: const Icon(Icons.delete_rounded),
+                      ),
+                    ),
                   ),
-                  title: Text(
-                    surveys[index]['Title'],
-                    style: AppStyle.tileTitle,
-                  ),
-                  trailing: InkWell(
-                    onTap: () {
-                      _deleteSurvey(surveys[index].id);
-                    },
-                    child: const Icon(Icons.delete_rounded),
-                  ),
-                )),
+                ),
                 const SizedBox(height: 10),
               ],
             );

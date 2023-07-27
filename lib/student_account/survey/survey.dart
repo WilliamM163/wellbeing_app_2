@@ -40,7 +40,10 @@ class _SurveyScreenState extends State<SurveyScreen> {
                   answers ??= {};
                   if (answers![index.toString()] == null) {
                     answers![index.toString()] = {
+                      'Question': widget.survey['Survey'][index]['Question'],
                       'Answer': answers,
+                      'Indepth Question': widget.survey['Survey'][index]
+                          ['Indepth Question'],
                       'Indepth Answer': indepthAnswer,
                       'Slider Value': sliderValue
                     };
@@ -91,7 +94,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
       );
       return false;
     }
-    if (widget.survey['Survey'].length == answers!.length) {
+    if (widget.survey['Survey'].length != answers!.length) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(

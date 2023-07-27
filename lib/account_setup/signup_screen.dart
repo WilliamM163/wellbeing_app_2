@@ -280,11 +280,7 @@ class _SignupScreenState extends State<SignupScreen> {
             .doc(_teacherID)
             .collection('students')
             .doc(userId)
-            .set({
-          'Name': _name,
-          'Email': _email,
-          'Avatar': imageLink,
-        });
+            .set({});
       }
 
       Navigator.pop(context);

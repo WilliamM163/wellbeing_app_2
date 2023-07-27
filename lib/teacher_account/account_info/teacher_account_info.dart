@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_null_comparison
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -36,55 +38,7 @@ class TeacherAccountInfoScreen extends StatelessWidget {
               padding: AppStyle.appPadding,
               child: Column(
                 children: [
-                  CustomContainer(
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                if (userData['Avatar'] != null)
-                                  CircleAvatar(
-                                    radius: 40,
-                                    backgroundImage:
-                                        NetworkImage(userData['Avatar']),
-                                  ),
-                                if (userData['Avatar'] == null)
-                                  const Icon(
-                                    Icons.account_circle_rounded,
-                                    size: 80,
-                                  ),
-                                const SizedBox(width: 10),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      userData['Name'],
-                                      style: AppStyle.defaultText.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20,
-                                      ),
-                                    ),
-                                    Text(
-                                      userData['Email'],
-                                      style: AppStyle.defaultText,
-                                      overflow: TextOverflow.clip,
-                                    ),
-                                    Text(
-                                      'School: ${userData['School']}',
-                                      style: AppStyle.defaultText,
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                  _teacherAccountInfo(),
                   const Divider(),
                   Text(
                     'Students',
@@ -104,53 +58,8 @@ class TeacherAccountInfoScreen extends StatelessWidget {
                         ),
                         itemCount: students.length,
                         itemBuilder: (context, index) {
-                          return CustomContainer(
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  if (students[index]['Avatar'] != null)
-                                    CircleAvatar(
-                                      radius: 40,
-                                      backgroundImage: NetworkImage(
-                                        students[index]['Avatar'],
-                                      ),
-                                    ),
-                                  if (students[index]['Avatar'] == null)
-                                    const Icon(
-                                      Icons.account_circle_rounded,
-                                      size: 80,
-                                    ),
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      FittedBox(
-                                        fit: BoxFit.fitWidth,
-                                        child: Text(
-                                          students[index]['Name'],
-                                          style: AppStyle.defaultText.copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 20,
-                                          ),
-                                        ),
-                                      ),
-                                      FittedBox(
-                                        fit: BoxFit.fitWidth,
-                                        child: Text(
-                                          students[index]['Email'],
-                                          style: AppStyle.defaultText.copyWith(
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ),
-                          );
+                          String studentId = students[index].id;
+                          return _studentTile(studentId);
                         }),
                   ),
                   const SizedBox(height: 10),
@@ -221,6 +130,117 @@ class TeacherAccountInfoScreen extends StatelessWidget {
         }
         return const ErrorScreen();
       },
+    );
+  }
+
+  CustomContainer _teacherAccountInfo() {
+    return CustomContainer(
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SizedBox(
+          width: double.infinity,
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  if (userData['Avatar'] != null)
+                    CircleAvatar(
+                      radius: 40,
+                      backgroundImage: NetworkImage(userData['Avatar']),
+                    ),
+                  if (userData['Avatar'] == null)
+                    const Icon(
+                      Icons.account_circle_rounded,
+                      size: 80,
+                    ),
+                  const SizedBox(width: 10),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        userData['Name'],
+                        style: AppStyle.defaultText.copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+                      Text(
+                        userData['Email'],
+                        style: AppStyle.defaultText,
+                        overflow: TextOverflow.clip,
+                      ),
+                      Text(
+                        'School: ${userData['School']}',
+                        style: AppStyle.defaultText,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  CustomContainer _studentTile(String studentId) {
+    return CustomContainer(
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: FutureBuilder(
+            future: FirebaseFirestore.instance
+                .collection('users')
+                .doc(studentId)
+                .get(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                final DocumentSnapshot? student = snapshot.data;
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    if (student!['Avatar'] == null)
+                      const Icon(
+                        Icons.account_circle_rounded,
+                        size: 80,
+                      ),
+                    if (student['Avatar'] != null)
+                      CircleAvatar(
+                        radius: 40,
+                        backgroundImage: NetworkImage(
+                          student['Avatar'],
+                        ),
+                      ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        FittedBox(
+                          fit: BoxFit.fitWidth,
+                          child: Text(
+                            student != null ? student['Name'] : '',
+                            style: AppStyle.defaultText.copyWith(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ),
+                        FittedBox(
+                          fit: BoxFit.fitWidth,
+                          child: Text(
+                            student != null ? student['Email'] : '',
+                            style: AppStyle.defaultText.copyWith(
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                );
+              }
+              return const Center(child: CircularProgressIndicator());
+            }),
+      ),
     );
   }
 
