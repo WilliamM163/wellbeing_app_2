@@ -46,52 +46,80 @@ class StudentSurveyScreen extends StatelessWidget {
       child: ListView.builder(
         itemCount: surveys.length,
         itemBuilder: (context, index) {
-          bool isDone = false;
-          try {
-            isDone = surveys[index]['Done'][userId];
-          } catch (e) {
-            null;
-          }
-          return Column(
-            children: [
-              InkWell(
-                borderRadius: BorderRadius.circular(15),
-                onTap: isDone
-                    ? null
-                    : () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SurveyScreen(
-                              survey: surveys[index],
-                              userData: userData,
-                            ),
+          return FutureBuilder(
+            future: FirebaseFirestore.instance
+                .collection('users')
+                .doc(userData['Teacher Id'])
+                .collection('surveys')
+                .doc(surveys[index].id)
+                .collection('answers')
+                .get(),
+            builder: (builder, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Column(
+                  children: [
+                    CustomContainer(ListTile()),
+                    SizedBox(height: 10),
+                  ],
+                );
+              }
+              if (snapshot.connectionState == ConnectionState.done) {
+                List answers = snapshot.data!.docs;
+                bool isDone = false;
+                for (DocumentSnapshot answer in answers) {
+                  if (answer.id == userId) {
+                    isDone = true;
+                    break;
+                  }
+                }
+
+                return Column(
+                  children: [
+                    InkWell(
+                      borderRadius: BorderRadius.circular(15),
+                      onTap: isDone
+                          ? null
+                          : () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SurveyScreen(
+                                    survey: surveys[index],
+                                    userData: userData,
+                                  ),
+                                ),
+                              );
+                            },
+                      child: CustomContainer(
+                        ListTile(
+                          leading: const CircleAvatar(
+                            child: Icon(Icons.assignment_rounded),
                           ),
-                        );
-                      },
-                child: CustomContainer(
-                  ListTile(
-                    leading: const CircleAvatar(
-                      child: Icon(Icons.assignment_rounded),
-                    ),
-                    title: Text(
-                      surveys[index]['Title'],
-                      style: AppStyle.tileTitle,
-                    ),
-                    trailing: isDone
-                        ? Icon(
-                            Icons.done_rounded,
-                            color: Colors.green[800],
-                          )
-                        : Icon(
-                            Icons.horizontal_rule_rounded,
-                            color: Colors.red[800],
+                          title: Text(
+                            surveys[index]['Title'],
+                            style: AppStyle.tileTitle,
                           ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-            ],
+                          trailing: isDone
+                              ? Icon(
+                                  Icons.done_rounded,
+                                  color: Colors.green[800],
+                                )
+                              : Icon(
+                                  Icons.horizontal_rule_rounded,
+                                  color: Colors.red[800],
+                                ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                );
+              }
+              return CustomContainer(Text(
+                'Error while loading',
+                style: AppStyle.defaultText,
+              ));
+            },
           );
         },
       ),

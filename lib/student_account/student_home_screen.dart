@@ -104,7 +104,15 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
         ],
         backgroundColor: AppStyle.appBarColour,
       ),
-      drawer: const StudentDrawer(),
+      drawer: StudentDrawer(
+        widget.userData,
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+          _onItemTapped(index);
+        },
+      ),
       body: PageView(
         controller: _pageController,
         scrollDirection: Axis.horizontal,

@@ -50,7 +50,8 @@ class TeacherHomeScreen extends StatelessWidget {
       {
         'Icon': Icons.school_rounded,
         'Title': 'Manage Students',
-        'Description': 'Check student\'s survey activity.',
+        'Description':
+            'Link student\'s to your account, contact them, and check student\'s survey activity.',
         'Colour': Colors.orange.shade800,
         'Screen': ManageStudentsScreen(userData),
       },
@@ -83,7 +84,7 @@ class TeacherHomeScreen extends StatelessWidget {
         backgroundColor: AppStyle.appBarColour,
       ),
       backgroundColor: AppStyle.backgroundColour,
-      drawer: TeacherDrawer(userData),
+      drawer: TeacherDrawer(userData, actionsList),
       body: Padding(
         padding: AppStyle.appPadding,
         child: GridView.builder(

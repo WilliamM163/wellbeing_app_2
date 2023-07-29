@@ -45,7 +45,9 @@ class _SurveyScreenState extends State<SurveyScreen> {
                       'Indepth Question': widget.survey['Survey'][index]
                           ['Indepth Question'],
                       'Indepth Answer': indepthAnswer,
-                      'Slider Value': sliderValue
+                      'Slider Value': sliderValue,
+                      'Scale or Descriptor': widget.survey['Survey'][index]
+                          ['Scale or Descriptor']
                     };
                   }
                   answers![index.toString()]['Answer'] = answer;
@@ -114,14 +116,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
       'Sending ...',
       style: AppStyle.defaultText,
     )));
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.userData['Teacher Id'])
-        .collection('surveys')
-        .doc(widget.survey.id)
-        .update({
-      'Done': {userId: true}
-    });
+
     await FirebaseFirestore.instance
         .collection('users')
         .doc(widget.userData['Teacher Id'])

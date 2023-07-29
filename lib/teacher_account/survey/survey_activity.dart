@@ -32,75 +32,75 @@ class _SurveyActivityScreenState extends State<SurveyActivityScreen> {
             const Divider(),
             Expanded(
               child: StreamBuilder(
-                  stream: FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(userId)
-                      .collection('surveys')
-                      .doc(widget.surveyId)
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    if (snapshot.connectionState == ConnectionState.active) {
-                      final Map<String, dynamic>? students =
-                          snapshot.data!.data()!['Done'];
-                      Map<String, dynamic>? hasRead =
-                          snapshot.data!.data()!['Has Read'];
-                      hasRead ??= {};
-                      // ignore: unnecessary_null_comparison
-                      if (students == null) {
-                        return Center(
-                          child: Text(
-                            'No one has completed the survey',
-                            style: AppStyle.defaultText,
-                          ),
-                        );
-                      }
-                      List<String> studentsList = students.keys.toList();
+                stream: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(userId)
+                    .collection('surveys')
+                    .doc(widget.surveyId)
+                    .collection('answers')
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (snapshot.connectionState == ConnectionState.active) {
+                    final List students = snapshot.data!.docs;
 
-                      return ListView.builder(
-                        itemCount: studentsList.length,
-                        itemBuilder: (context, index) {
-                          String studentId = studentsList[index];
-                          return FutureBuilder(
-                            future: FirebaseFirestore.instance
-                                .collection('users')
-                                .doc(studentId)
-                                .get(),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return _listTile(
-                                    title: '...', hasRead: hasRead![studentId]);
-                              }
-                              if (snapshot.connectionState ==
-                                  ConnectionState.done) {
-                                String studentName = snapshot.data!['Name'];
-                                String? avatar = snapshot.data!['Avatar'];
-                                return _listTile(
-                                  title: studentName,
-                                  studentId: studentId,
-                                  surveyId: widget.surveyId,
-                                  hasRead: hasRead![studentId],
-                                  avatar: avatar,
-                                );
-                              }
-                              return _listTile(title: 'Error', hasRead: null);
-                            },
-                          );
-                        },
+                    if (students.isEmpty) {
+                      return Center(
+                        child: Text(
+                          'No one has completed the survey',
+                          style: AppStyle.defaultText,
+                        ),
                       );
                     }
-                    return Container();
-                  }),
+
+                    return ListView.builder(
+                      itemCount: students.length,
+                      itemBuilder: (context, index) {
+                        String studentId = students[index].id;
+                        bool? hasRead = students[index].data()!['Has Read'];
+                        hasRead ??= false;
+                        return FutureBuilder(
+                          future: FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(studentId)
+                              .get(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return _listTile(title: '...', hasRead: hasRead);
+                            }
+                            if (snapshot.connectionState ==
+                                ConnectionState.done) {
+                              String studentName = snapshot.data!['Name'];
+                              String email = snapshot.data!['Email'];
+                              String? avatar = snapshot.data!['Avatar'];
+                              return _listTile(
+                                title: studentName,
+                                studentId: studentId,
+                                email: email,
+                                surveyId: widget.surveyId,
+                                hasRead: hasRead,
+                                avatar: avatar,
+                              );
+                            }
+                            return _listTile(title: 'Error', hasRead: null);
+                          },
+                        );
+                      },
+                    );
+                  }
+                  return Container();
+                },
+              ),
             ),
             const Divider(),
-            Text(
-              'Students who haven\'t completed their survey',
-              style: AppStyle.mainTitle.copyWith(fontSize: 18),
-            ),
-            Expanded(child: Container()),
+            // Text(
+            //   'Students who haven\'t completed their survey',
+            //   style: AppStyle.mainTitle.copyWith(fontSize: 18),
+            // ),
+            // Expanded(child: Container()),
           ],
         ),
       ),
@@ -111,6 +111,7 @@ class _SurveyActivityScreenState extends State<SurveyActivityScreen> {
     required String title,
     String? surveyId,
     String? studentId,
+    String? email,
     required bool? hasRead,
     String? avatar,
   }) {
@@ -128,6 +129,7 @@ class _SurveyActivityScreenState extends State<SurveyActivityScreen> {
                           title: title,
                           surveyId: surveyId!,
                           studentId: studentId!,
+                          email: email!,
                         ),
                       ),
                     );
@@ -146,12 +148,19 @@ class _SurveyActivityScreenState extends State<SurveyActivityScreen> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              trailing: hasRead != null
-                  ? const Icon(Icons.done)
-                  : const Icon(Icons.horizontal_rule_rounded),
+              trailing: hasRead!
+                  ? Icon(
+                      Icons.done,
+                      color: Colors.green[800],
+                    )
+                  : Icon(
+                      Icons.horizontal_rule_rounded,
+                      color: Colors.red[800],
+                    ),
             ),
           ),
-        )
+        ),
+        const SizedBox(height: 10),
       ],
     );
   }
