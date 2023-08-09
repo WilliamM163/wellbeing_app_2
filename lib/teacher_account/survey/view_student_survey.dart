@@ -162,7 +162,7 @@ class _ViewStudentSurveyScreenState extends State<ViewStudentSurveyScreen> {
                     children: [
                       const SizedBox(height: 5),
                       Text(
-                        response[index]['Answer'],
+                        response[index]['Answer'] ?? '',
                         style: AppStyle.defaultText,
                         textAlign: TextAlign.left,
                       )
@@ -179,7 +179,7 @@ class _ViewStudentSurveyScreenState extends State<ViewStudentSurveyScreen> {
                       ),
                       const SizedBox(height: 5),
                       Text(
-                        response[index]['Indepth Answer'],
+                        response[index]['Indepth Answer'] ?? '',
                         style: AppStyle.defaultText,
                       )
                     ],

@@ -144,7 +144,17 @@ class _TeacherDrawerState extends State<TeacherDrawer> {
                 ],
               ),
             ),
-            IconButton(onPressed: () {}, icon: const Icon(Icons.edit)),
+            IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(
+                      'Sorry this feature is not available yet',
+                      style: AppStyle.defaultText,
+                    ),
+                  ));
+                },
+                icon: const Icon(Icons.edit)),
           ],
         ),
       ),

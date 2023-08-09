@@ -10,7 +10,7 @@ import 'package:wellbeing_app_2/teacher_account/resources/teacher_resources_scre
 import 'package:wellbeing_app_2/teacher_account/widgets/action_tiles.dart';
 
 class TeacherHomeScreen extends StatelessWidget {
-  const TeacherHomeScreen(this.userData, {super.key});
+  const TeacherHomeScreen({required this.userData, super.key});
   final Map<String, dynamic> userData;
 
   @override

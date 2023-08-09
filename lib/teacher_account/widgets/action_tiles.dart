@@ -40,9 +40,11 @@ class ActionTile extends StatelessWidget {
                       color: colour,
                       size: 30,
                     ),
-                    Text(
-                      title,
-                      style: AppStyle.tileTitle,
+                    FittedBox(
+                      child: Text(
+                        title,
+                        style: AppStyle.tileTitle,
+                      ),
                     ),
                     Text(
                       description,

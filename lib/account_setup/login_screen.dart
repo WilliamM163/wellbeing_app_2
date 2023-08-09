@@ -4,6 +4,10 @@ import 'package:wellbeing_app_2/account_setup/signup_screen.dart';
 import 'package:wellbeing_app_2/style/app_style.dart';
 import 'package:wellbeing_app_2/style/login_style.dart';
 
+// In Flutter, a stateful widget is a type of widget that can change and
+// maintain its internal state over time, allowing it to dynamically update and
+// display different content in response to user interactions or changes in data.
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 

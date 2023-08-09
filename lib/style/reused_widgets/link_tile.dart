@@ -29,17 +29,23 @@ class LinkTile extends StatelessWidget {
               Text(
                 links[index]['Emoji'],
                 style: const TextStyle(fontSize: 40),
+                overflow: TextOverflow.fade,
               ),
-              Text(
-                links[index]['Title'],
-                style: AppStyle.tileTitle,
+              FittedBox(
+                child: Text(
+                  links[index]['Title'],
+                  style: AppStyle.tileTitle,
+                ),
               ),
-              Text(
-                links[index]['Description'],
-                style: AppStyle.tileDescription,
-                maxLines: 3,
+              Expanded(
+                child: Text(
+                  links[index]['Description'],
+                  style: AppStyle.tileDescription,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: false,
+                ),
               ),
-              Expanded(child: Container()),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [

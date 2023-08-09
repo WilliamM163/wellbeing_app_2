@@ -2,7 +2,9 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:wellbeing_app_2/screens/error_screen.dart';
+import 'package:wellbeing_app_2/student_account/home/graph/graph.dart';
 import 'package:wellbeing_app_2/student_account/survey/student_survey_screen.dart';
 import 'package:wellbeing_app_2/style/app_style.dart';
 import 'package:wellbeing_app_2/style/reused_widgets/container.dart';
@@ -61,72 +63,123 @@ class _StudentHomePageState extends State<StudentHomePage> {
       padding: AppStyle.appPadding,
       child: Column(
         children: [
-          CustomContainer(
-            Container(
-              padding: const EdgeInsets.all(10),
-              width: double.infinity,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Wellcome $firstName 👋',
-                    style: AppStyle.tileTitle,
-                  ),
-                  Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      '"${quoteData['Quote']}"',
-                      style: AppStyle.defaultText,
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      quoteData['Author'] ?? 'Anonymous',
-                      style: AppStyle.defaultText.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
+          _quoteContainer(firstName, quoteData),
           const SizedBox(height: 10),
-          Expanded(
-            child: CustomContainer(
-              Center(
-                child: Text(
-                  'SORRY THE GRAPH IS YET TO BE IMPLEMENTED',
-                  style: AppStyle.defaultText,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-          ),
+          _graph(),
           const SizedBox(height: 10),
-          SizedBox(
+          _requestToTalk(),
+          _startSurvey(userData)
+        ],
+      ),
+    );
+  }
+
+  Widget _requestToTalk() {
+    bool isLoading = false;
+
+    return StatefulBuilder(builder: (context, setState) {
+      return SizedBox(
+        width: double.infinity,
+        child: ElevatedButton.icon(
+          onPressed: isLoading == false
+              ? () {
+                  setState(() => isLoading = !isLoading);
+                  FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(widget.userData['Teacher Id'])
+                      .get()
+                      .then((value) {
+                    launchUrlString(
+                      'mailto:${value['Email']}?subject=Request to Talk | Taupānga Oranga',
+                    );
+                    setState(() => isLoading = !isLoading);
+                  });
+                }
+              : null,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.purple[800],
+            foregroundColor: Colors.white,
+          ),
+          icon: !isLoading
+              ? const Icon(Icons.email_rounded)
+              : const CircularProgressIndicator(),
+          label: Text(
+            'Request to talk',
+            style: AppStyle.defaultText,
+          ),
+        ),
+      );
+    });
+  }
+
+  SizedBox _startSurvey(Map<String, dynamic> userData) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => StudentSurveyScreen(userData)),
+          );
+        },
+        icon: const Icon(Icons.start_rounded),
+        label: Text(
+          'Start a survey',
+          style: AppStyle.defaultText,
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.purple[800],
+          foregroundColor: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  Widget _graph() {
+    return StatefulBuilder(
+      builder: (context, setState) => Expanded(
+        child: CustomContainer(
+          Container(
             width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => StudentSurveyScreen(userData)),
-                );
-              },
-              icon: const Icon(Icons.start_rounded),
-              label: Text(
-                'Start a survey',
+            padding: AppStyle.appPadding,
+            child: const LineChartSample1(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  CustomContainer _quoteContainer(String firstName, quoteData) {
+    return CustomContainer(
+      Container(
+        padding: const EdgeInsets.all(10),
+        width: double.infinity,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Wellcome $firstName 👋',
+              style: AppStyle.tileTitle,
+            ),
+            Align(
+              alignment: Alignment.center,
+              child: Text(
+                '"${quoteData['Quote']}"',
                 style: AppStyle.defaultText,
               ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.purple[800],
-                foregroundColor: Colors.white,
-              ),
             ),
-          )
-        ],
+            Align(
+              alignment: Alignment.center,
+              child: Text(
+                quoteData['Author'] ?? 'Anonymous',
+                style: AppStyle.defaultText.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

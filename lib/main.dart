@@ -55,7 +55,7 @@ class WellbeingApp extends StatelessWidget {
                       return StudentHomeScreen(userData: userData);
                     }
                     if (userData['Account Type'] == 'Teacher') {
-                      return TeacherHomeScreen(userData);
+                      return TeacherHomeScreen(userData: userData);
                     }
                   }
                   return const ErrorScreen();
