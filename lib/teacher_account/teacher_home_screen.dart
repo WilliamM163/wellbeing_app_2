@@ -20,7 +20,7 @@ class TeacherHomeScreen extends StatelessWidget {
         'Icon': Icons.assignment_add,
         'Title': 'Create Survey',
         'Description':
-            'Send survey\'s to your students. Students can fill out responses. You will be able to read their feedback.',
+            'Send survey\'s to your students. Students can fill out responses. By clicking on the survey you will be able to see your students responses.',
         'Colour': Colors.purple.shade800,
         'Screen': TeacherSurveyScreen(userData),
       },
@@ -43,7 +43,8 @@ class TeacherHomeScreen extends StatelessWidget {
       {
         'Icon': Icons.format_quote_rounded,
         'Title': 'Quotes',
-        'Description': 'Add quotes. A student will see a new quote everyday.',
+        'Description':
+            'Add quotes. A student will see a new quote everytime they open the app.',
         'Colour': Colors.red.shade800,
         'Screen': TeacherQuotesScreen(),
       },
@@ -51,7 +52,7 @@ class TeacherHomeScreen extends StatelessWidget {
         'Icon': Icons.school_rounded,
         'Title': 'Manage Students',
         'Description':
-            'Link student\'s to your account, contact them, and check student\'s survey activity.',
+            'Link student\'s to your account and contact them by clicking on their account info.',
         'Colour': Colors.orange.shade800,
         'Screen': ManageStudentsScreen(userData),
       },

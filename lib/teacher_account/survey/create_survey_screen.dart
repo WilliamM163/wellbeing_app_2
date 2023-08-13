@@ -17,6 +17,7 @@ class CreateSurveyScreen extends StatefulWidget {
 
 class _CreateSurveyScreenState extends State<CreateSurveyScreen> {
   List<Map<String, dynamic>>? questions;
+
   @override
   void initState() {
     questions = [
@@ -27,7 +28,7 @@ class _CreateSurveyScreenState extends State<CreateSurveyScreen> {
         'Indepth Question': 'Why is this the case?'
       },
       {
-        'Question': 'List 5 things to be greatful for',
+        'Question': 'List 5 things to be grateful for',
         'Scale or Descriptor': 'Descriptor',
         'Indepth Question': null,
       },
@@ -40,34 +41,42 @@ class _CreateSurveyScreenState extends State<CreateSurveyScreen> {
     return Scaffold(
       appBar: _appBar(context, widget.title),
       backgroundColor: AppStyle.backgroundColour,
-      body: Padding(
-        padding: AppStyle.appPadding,
-        child: ListView.builder(
-          itemCount: questions!.length,
-          itemBuilder: (context, index) {
-            return Question(
-              index: index,
-              questions: questions!,
-              onDelete: () {
-                setState(() {
-                  questions!.removeAt(index);
-                });
-              },
-            );
-          },
-        ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _addQuestion,
-        label: Text(
-          'Add a question',
-          style: AppStyle.defaultText,
-        ),
-        icon: const Icon(Icons.add),
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.grey.shade900,
-      ),
+      body: _content(),
+      floatingActionButton: _floatingActionBar(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
+  }
+
+  FloatingActionButton _floatingActionBar() {
+    return FloatingActionButton.extended(
+      onPressed: _addQuestion,
+      label: Text(
+        'Add a question',
+        style: AppStyle.defaultText,
+      ),
+      icon: const Icon(Icons.add),
+      foregroundColor: Colors.white,
+      backgroundColor: Colors.grey.shade900,
+    );
+  }
+
+  Padding _content() {
+    return Padding(
+      padding: AppStyle.appPadding,
+      child: ListView.builder(
+        itemCount: questions!.length,
+        itemBuilder: (context, index) {
+          return Question(
+            index: index,
+            questions: questions!,
+            onDelete: () {
+              setState(() {
+                questions!.removeAt(index);
+              });
+            },
+          );
+        },
+      ),
     );
   }
 

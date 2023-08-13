@@ -46,14 +46,14 @@ class StudentSurveyScreen extends StatelessWidget {
       child: ListView.builder(
         itemCount: surveys.length,
         itemBuilder: (context, index) {
-          return FutureBuilder(
-            future: FirebaseFirestore.instance
+          return StreamBuilder(
+            stream: FirebaseFirestore.instance
                 .collection('users')
                 .doc(userData['Teacher Id'])
                 .collection('surveys')
                 .doc(surveys[index].id)
                 .collection('answers')
-                .get(),
+                .snapshots(),
             builder: (builder, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Column(
@@ -63,7 +63,7 @@ class StudentSurveyScreen extends StatelessWidget {
                   ],
                 );
               }
-              if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.connectionState == ConnectionState.active) {
                 List answers = snapshot.data!.docs;
                 bool isDone = false;
                 for (DocumentSnapshot answer in answers) {

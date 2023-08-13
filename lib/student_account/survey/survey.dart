@@ -125,6 +125,17 @@ class _SurveyScreenState extends State<SurveyScreen> {
         .collection('answers')
         .doc(userId)
         .set(answers!);
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('graph')
+        .doc()
+        .set({
+      'Date': Timestamp.now(),
+      'Scale': answers!['0']['Slider Value'],
+    });
+
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(

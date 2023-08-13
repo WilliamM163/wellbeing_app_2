@@ -16,6 +16,8 @@ class StudentAgendaPage extends StatefulWidget {
 }
 
 class _StudentAgendaPageState extends State<StudentAgendaPage> {
+  bool showDone = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,9 +27,10 @@ class _StudentAgendaPageState extends State<StudentAgendaPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Your Agenda List', style: AppStyle.mainTitle),
+            _titleAndSelector(),
             const Divider(),
-            Expanded(child: _mainContent()),
+            if (showDone == false) _doing(),
+            if (showDone == true) _done(),
           ],
         ),
       ),
@@ -36,8 +39,81 @@ class _StudentAgendaPageState extends State<StudentAgendaPage> {
     );
   }
 
-  Widget _mainContent() {
-    return StreamBuilder(
+  Expanded _done() {
+    return Expanded(
+      child: StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .collection('agenda')
+            .orderBy('Completion Date', descending: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const LoadingScreen();
+          }
+          if (snapshot.connectionState == ConnectionState.active) {
+            final List tasks = snapshot.data!.docs;
+            if (tasks.isEmpty) {
+              return _noCompletedTasks();
+            }
+            return _tasks(tasks);
+          }
+          return const ErrorScreen();
+        },
+      ),
+    );
+  }
+
+  Center _noCompletedTasks() {
+    return Center(
+      child: Text(
+        'No completed tasks, please complete a task',
+        style: AppStyle.defaultText,
+      ),
+    );
+  }
+
+  Row _titleAndSelector() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text('Your Agenda List', style: AppStyle.mainTitle),
+        _dropDownMenu(),
+      ],
+    );
+  }
+
+  DropdownButton<bool> _dropDownMenu() {
+    return DropdownButton(
+      value: showDone,
+      items: [
+        DropdownMenuItem(
+          value: false,
+          child: Text(
+            'Doing',
+            style: AppStyle.defaultText,
+          ),
+        ),
+        DropdownMenuItem(
+          value: true,
+          child: Text(
+            'Done',
+            style: AppStyle.defaultText,
+          ),
+        ),
+      ],
+      onChanged: (value) {
+        setState(() {
+          showDone = value!;
+        });
+      },
+    );
+  }
+
+  Widget _doing() {
+    return Expanded(
+      child: StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection('users')
             .doc(userId)
@@ -49,10 +125,22 @@ class _StudentAgendaPageState extends State<StudentAgendaPage> {
             return const LoadingScreen();
           }
           if (snapshot.connectionState == ConnectionState.active) {
-            final List tasks = snapshot.data!.docs;
+            List tasks = snapshot.data!.docs;
             if (tasks.isEmpty) {
               return _noTasks();
             }
+
+            // Take out completed tasks
+            List uncompletedTasks = [];
+            for (int index = 0; index < tasks.length; index++) {
+              try {
+                tasks[index]['Completion Date'];
+              } catch (e) {
+                uncompletedTasks.add(tasks[index]);
+              }
+            }
+
+            tasks = uncompletedTasks;
 
             // Sort tasks by Priority and Finish Date
             tasks.sort((a, b) {
@@ -69,7 +157,9 @@ class _StudentAgendaPageState extends State<StudentAgendaPage> {
             return _tasks(tasks);
           }
           return const ErrorScreen();
-        });
+        },
+      ),
+    );
   }
 
   ListView _tasks(List<dynamic> tasks) {
@@ -84,10 +174,13 @@ class _StudentAgendaPageState extends State<StudentAgendaPage> {
         final String finishDate =
             DateFormat(dateFormat).format(tasks[index]['Finish Date'].toDate());
         final String description = tasks[index]['Description'];
+        final bool isCompleted =
+            tasks[index].data().containsKey('Completion Date');
 
         return Column(
           children: [
-            _task(id, task, priorityColour, priority, finishDate, description),
+            _task(id, task, priorityColour, priority, finishDate, description,
+                isCompleted),
             const SizedBox(height: 10),
             if (index == tasks.length - 1) const SizedBox(height: 50),
           ],
@@ -97,10 +190,10 @@ class _StudentAgendaPageState extends State<StudentAgendaPage> {
   }
 
   Widget _task(String id, String task, Color priorityColour, String priority,
-      String finishDate, String description) {
+      String finishDate, String description, bool isCompleted) {
     return GestureDetector(
       onTap: () {
-        _taskActions(id);
+        _taskActions(id, isCompleted);
       },
       child: Container(
         clipBehavior: Clip.antiAlias,
@@ -163,7 +256,7 @@ class _StudentAgendaPageState extends State<StudentAgendaPage> {
     );
   }
 
-  Future<dynamic> _taskActions(String id) {
+  Future<dynamic> _taskActions(String id, bool isCompleted) {
     return showDialog(
         context: context,
         builder: (context) {
@@ -171,16 +264,35 @@ class _StudentAgendaPageState extends State<StudentAgendaPage> {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                TextButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.done_rounded),
-                  label: const Text('Finish Task'),
-                ),
-                TextButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.edit_rounded),
-                  label: const Text('Edit Task'),
-                ),
+                if (isCompleted == false)
+                  TextButton.icon(
+                    onPressed: () async {
+                      await FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(userId)
+                          .collection('agenda')
+                          .doc(id)
+                          .update({
+                        'Completion Date': Timestamp.now(),
+                      });
+                      if (Navigator.canPop(context)) Navigator.pop(context);
+                    },
+                    icon: const Icon(Icons.done_rounded),
+                    label: const Text('Finish Task'),
+                  ),
+                if (isCompleted == false)
+                  TextButton.icon(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(
+                        'Sorry this feature is not available yet',
+                        style: AppStyle.defaultText,
+                      )));
+                    },
+                    icon: const Icon(Icons.edit_rounded),
+                    label: const Text('Edit Task'),
+                  ),
                 TextButton.icon(
                   onPressed: () async {
                     await FirebaseFirestore.instance

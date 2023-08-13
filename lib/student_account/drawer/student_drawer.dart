@@ -118,7 +118,16 @@ class _StudentDrawerState extends State<StudentDrawer> {
                 ],
               ),
             ),
-            IconButton(onPressed: () {}, icon: const Icon(Icons.edit)),
+            IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text(
+                    'Sorry this feature is still in the works',
+                    style: AppStyle.defaultText,
+                  )));
+                },
+                icon: const Icon(Icons.edit)),
           ],
         ),
       ),

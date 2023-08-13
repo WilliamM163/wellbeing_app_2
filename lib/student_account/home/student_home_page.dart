@@ -8,6 +8,7 @@ import 'package:wellbeing_app_2/student_account/home/graph/graph.dart';
 import 'package:wellbeing_app_2/student_account/survey/student_survey_screen.dart';
 import 'package:wellbeing_app_2/style/app_style.dart';
 import 'package:wellbeing_app_2/style/reused_widgets/container.dart';
+import 'package:wellbeing_app_2/userId.dart';
 
 class StudentHomePage extends StatefulWidget {
   const StudentHomePage(this.userData, {super.key});
@@ -137,14 +138,37 @@ class _StudentHomePageState extends State<StudentHomePage> {
   }
 
   Widget _graph() {
-    return StatefulBuilder(
-      builder: (context, setState) => Expanded(
-        child: CustomContainer(
-          Container(
-            width: double.infinity,
-            padding: AppStyle.appPadding,
-            child: const LineChartSample1(),
-          ),
+    return Expanded(
+      child: CustomContainer(
+        StreamBuilder(
+          stream: FirebaseFirestore.instance
+              .collection('users')
+              .doc(userId)
+              .collection('graph')
+              .orderBy('Date', descending: true)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.connectionState == ConnectionState.active) {
+              final List points = snapshot.data!.docs;
+              for (DocumentSnapshot point in points) {
+                print(point.data());
+              }
+              return Container(
+                width: double.infinity,
+                padding: AppStyle.appPadding,
+                child: const LineChartSample1(),
+              );
+            }
+            return Center(
+              child: Text(
+                'Sorry something went wrong',
+                style: AppStyle.defaultText,
+              ),
+            );
+          },
         ),
       ),
     );

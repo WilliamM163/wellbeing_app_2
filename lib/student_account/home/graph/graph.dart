@@ -200,17 +200,21 @@ class LineChartSample1State extends State<LineChartSample1> {
         children: <Widget>[
           _title(),
           const SizedBox(
-            height: 37,
+            height: 10,
           ),
-          const Expanded(
-            child: _LineChart(),
-          ),
+          _graph(),
           const SizedBox(
             height: 10,
           ),
           _key()
         ],
       ),
+    );
+  }
+
+  Expanded _graph() {
+    return const Expanded(
+      child: _LineChart(),
     );
   }
 

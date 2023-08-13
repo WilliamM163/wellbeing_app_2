@@ -41,38 +41,7 @@ class _QuestionState extends State<Question> {
           builder: (context) {
             return SizedBox(
               width: double.infinity,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextButton.icon(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      widget.onDelete();
-                    },
-                    icon: const Icon(Icons.delete_rounded),
-                    label: Text(
-                      'Delete Question',
-                      style: AppStyle.defaultText,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  TextButton.icon(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content:
-                                Text('This feature is still in the works')),
-                      );
-                    },
-                    icon: const Icon(Icons.edit_rounded),
-                    label: Text(
-                      'Edit Question',
-                      style: AppStyle.defaultText,
-                    ),
-                  ),
-                ],
-              ),
+              child: widget.index != 0 ? _buttons(context) : _text(),
             );
           },
         );
@@ -196,6 +165,53 @@ class _QuestionState extends State<Question> {
           ],
         ),
       ),
+    );
+  }
+
+  Padding _text() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Center(
+        child: Text(
+          'You are unable to delete this question, because this question is required for the Wellbeing Graph in the Student\'s account.',
+          style: AppStyle.defaultText,
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+  }
+
+  Column _buttons(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        TextButton.icon(
+          onPressed: () {
+            Navigator.pop(context);
+            widget.onDelete();
+          },
+          icon: const Icon(Icons.delete_rounded),
+          label: Text(
+            'Delete Question',
+            style: AppStyle.defaultText,
+          ),
+        ),
+        const SizedBox(height: 10),
+        TextButton.icon(
+          onPressed: () {
+            Navigator.pop(context);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text('This feature is still in the works')),
+            );
+          },
+          icon: const Icon(Icons.edit_rounded),
+          label: Text(
+            'Edit Question',
+            style: AppStyle.defaultText,
+          ),
+        ),
+      ],
     );
   }
 
